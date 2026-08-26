@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>3D Fashion Avatar</title>
+  <meta name="description" content="Interactive 3D fashion avatar with ten outfit presets.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">3D FASHION STUDIO</div>
+        <h1>Fashion Avatar</h1>
+      </div>
+      <div class="top-actions">
+        <button id="resetCamera" class="glass-btn" type="button">Reset view</button>
+        <label class="glass-btn upload-btn">
+          Load GLB
+          <input id="glbInput" type="file" accept=".glb,.gltf" hidden>
+        </label>
+      </div>
+    </header>
+
+    <main class="stage-wrap">
+      <section id="stage" aria-label="Interactive 3D model viewer">
+        <div class="loading" id="loading">Loading 3D studio…</div>
+        <div class="hint">Drag to rotate · Wheel/pinch to zoom</div>
+        <div class="model-badge">SFW FASHION AVATAR</div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">LOOKBOOK</span>
+            <h2>Change her dress</h2>
+          </div>
+          <span id="activeLook" class="count">01 / 10</span>
+        </div>
+
+        <div id="outfits" class="outfits"></div>
+
+        <div class="divider"></div>
+
+        <div class="controls">
+          <button id="toggleSpin" class="control-btn active" type="button">Auto rotate</button>
+          <button id="toggleGrid" class="control-btn active" type="button">Floor grid</button>
+          <button id="randomLook" class="control-btn" type="button">Random look</button>
+        </div>
+
+        <div class="tip">
+          <strong>Want a photoreal model?</strong>
+          This viewer is built so you can drop in a real <code>.glb</code>/<code>.gltf</code> character.
+          Use <b>Load GLB</b> above and the same outfit UI remains available.
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
