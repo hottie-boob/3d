@@ -1,63 +1,764 @@
-<!doctype html>
+```html
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>3D Fashion Avatar</title>
-  <meta name="description" content="Interactive 3D fashion avatar with ten outfit presets.">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dress Up Game</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #f7eef5, #eee8f7);
+      color: #29232d;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .game {
+      width: min(1100px, 100%);
+      min-height: 700px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(70, 45, 75, 0.18);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+    }
+
+    /* LEFT SIDE */
+
+    .preview-area {
+      position: relative;
+      min-height: 700px;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,.9), transparent 40%),
+        linear-gradient(180deg, #faf6fb, #eee8f2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .preview-title {
+      position: absolute;
+      top: 24px;
+      left: 30px;
+      font-size: 14px;
+      letter-spacing: 2px;
+      font-weight: bold;
+      color: #8c718d;
+      text-transform: uppercase;
+    }
+
+    .character {
+      position: relative;
+      width: min(480px, 82%);
+      aspect-ratio: 3 / 4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .character img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #baseImage {
+      z-index: 1;
+    }
+
+    #innerImage {
+      z-index: 2;
+    }
+
+    #topImage {
+      z-index: 3;
+    }
+
+    #bottomImage {
+      z-index: 4;
+    }
+
+    #setImage {
+      z-index: 5;
+    }
+
+    .empty-message {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #a38fa4;
+      font-size: 13px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* RIGHT SIDE */
+
+    .controls {
+      padding: 28px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #eee5ef;
+    }
+
+    .header {
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      line-height: 1.1;
+      margin-bottom: 7px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #998b9b;
+    }
+
+    /* MAIN CATEGORY BUTTONS */
+
+    .main-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .main-button {
+      border: none;
+      background: #f7f2f7;
+      color: #5b4c5d;
+      border-radius: 14px;
+      padding: 14px 10px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s ease;
+      letter-spacing: .5px;
+    }
+
+    .main-button:hover {
+      background: #eee5ef;
+      transform: translateY(-1px);
+    }
+
+    .main-button.active {
+      background: #302832;
+      color: white;
+      box-shadow: 0 6px 15px rgba(48,40,50,.18);
+    }
+
+    /* SUB BUTTON AREA */
+
+    .items-panel {
+      flex: 1;
+      min-height: 270px;
+    }
+
+    .items-title {
+      font-size: 12px;
+      color: #9b8d9d;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 5px 0 12px;
+    }
+
+    .items {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+
+    .item-button {
+      border: 1px solid #eee5ef;
+      background: #fff;
+      border-radius: 13px;
+      padding: 12px 6px;
+      cursor: pointer;
+      color: #5a4d5c;
+      font-size: 12px;
+      font-weight: 600;
+      transition: .2s ease;
+    }
+
+    .item-button:hover {
+      border-color: #cbb8ce;
+      background: #faf6fa;
+      transform: translateY(-2px);
+    }
+
+    .item-button.selected {
+      border-color: #302832;
+      background: #302832;
+      color: white;
+    }
+
+    /* RESET */
+
+    .reset-button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 1px solid #e3d8e4;
+      border-radius: 14px;
+      background: white;
+      color: #5e515f;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .reset-button:hover {
+      background: #f8f3f8;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 11px;
+      color: #aa9baa;
+      margin-top: 12px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 800px) {
+      body {
+        padding: 0;
+        align-items: flex-start;
+      }
+
+      .game {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .preview-area {
+        min-height: 60vh;
+        height: 60vh;
+      }
+
+      .character {
+        width: min(430px, 90%);
+        height: 90%;
+      }
+
+      .controls {
+        border-left: none;
+        border-top: 1px solid #eee5ef;
+        padding: 22px;
+      }
+
+      .items-panel {
+        min-height: 0;
+      }
+
+      .status {
+        margin-bottom: 5px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .preview-area {
+        min-height: 55vh;
+        height: 55vh;
+      }
+
+      .header h1 {
+        font-size: 25px;
+      }
+
+      .main-button {
+        padding: 12px 7px;
+      }
+
+      .items {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <div id="app">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow">3D FASHION STUDIO</div>
-        <h1>Fashion Avatar</h1>
+
+  <main class="game">
+
+    <!-- CHARACTER PREVIEW -->
+
+    <section class="preview-area">
+
+      <div class="preview-title">Your Look</div>
+
+      <div class="character">
+
+        <!-- Base character -->
+        <img id="baseImage" src="base.jpg" alt="Base character">
+
+        <!-- Clothing layers -->
+        <img id="innerImage" alt="" hidden>
+        <img id="topImage" alt="" hidden>
+        <img id="bottomImage" alt="" hidden>
+        <img id="setImage" alt="" hidden>
+
       </div>
-      <div class="top-actions">
-        <button id="resetCamera" class="glass-btn" type="button">Reset view</button>
-        <label class="glass-btn upload-btn">
-          Load GLB
-          <input id="glbInput" type="file" accept=".glb,.gltf" hidden>
-        </label>
+
+      <div class="empty-message">
+        Choose an outfit from the categories
       </div>
-    </header>
 
-    <main class="stage-wrap">
-      <section id="stage" aria-label="Interactive 3D model viewer">
-        <div class="loading" id="loading">Loading 3D studio…</div>
-        <div class="hint">Drag to rotate · Wheel/pinch to zoom</div>
-        <div class="model-badge">SFW FASHION AVATAR</div>
-      </section>
+    </section>
 
-      <aside class="panel">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">LOOKBOOK</span>
-            <h2>Change her dress</h2>
-          </div>
-          <span id="activeLook" class="count">01 / 10</span>
+
+    <!-- CONTROLS -->
+
+    <section class="controls">
+
+      <div class="header">
+        <h1>Dress Up</h1>
+        <p>Choose your favorite outfit</p>
+      </div>
+
+
+      <!-- MAIN BUTTONS -->
+
+      <div class="main-buttons">
+
+        <button class="main-button" data-category="inner">
+          INNER
+        </button>
+
+        <button class="main-button" data-category="top">
+          TOP
+        </button>
+
+        <button class="main-button" data-category="bottoms">
+          BOTTOMS
+        </button>
+
+        <button class="main-button" data-category="set">
+          SET
+        </button>
+
+      </div>
+
+
+      <!-- SUB ITEMS -->
+
+      <div class="items-panel">
+
+        <div class="items-title" id="itemsTitle">
+          Select a category
         </div>
 
-        <div id="outfits" class="outfits"></div>
-
-        <div class="divider"></div>
-
-        <div class="controls">
-          <button id="toggleSpin" class="control-btn active" type="button">Auto rotate</button>
-          <button id="toggleGrid" class="control-btn active" type="button">Floor grid</button>
-          <button id="randomLook" class="control-btn" type="button">Random look</button>
+        <div class="items" id="itemsContainer">
+          <!-- Buttons are created by JavaScript -->
         </div>
 
-        <div class="tip">
-          <strong>Want a photoreal model?</strong>
-          This viewer is built so you can drop in a real <code>.glb</code>/<code>.gltf</code> character.
-          Use <b>Load GLB</b> above and the same outfit UI remains available.
-        </div>
-      </aside>
-    </main>
-  </div>
+      </div>
 
-  <script type="module" src="script.js"></script>
+
+      <!-- RESET -->
+
+      <button class="reset-button" id="resetButton">
+        ↺ Reset Outfit
+      </button>
+
+      <div class="status" id="status">
+        No clothing selected
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+    /*
+      =====================================================
+      DRESS-UP GAME DATA
+      =====================================================
+
+      Change the filenames below if your image filenames
+      are different.
+
+      IMPORTANT:
+      Clothing images should preferably be transparent
+      PNG files so they layer correctly over base.jpg.
+    */
+
+    const clothing = {
+
+      inner: [
+        {
+          name: "Black",
+          file: "inner-black.png"
+        },
+        {
+          name: "White",
+          file: "inner-white.png"
+        }
+      ],
+
+      top: [
+        {
+          name: "T-Shirt",
+          file: "top-tshirt.png"
+        },
+        {
+          name: "Shirt",
+          file: "top-shirt.png"
+        },
+        {
+          name: "Blouse",
+          file: "top-blouse.png"
+        }
+      ],
+
+      bottoms: [
+        {
+          name: "Skirt",
+          file: "bottoms-skirt.png"
+        },
+        {
+          name: "Shorts",
+          file: "bottoms-shorts.png"
+        },
+        {
+          name: "Pant",
+          file: "bottoms-pant.png"
+        }
+      ],
+
+      set: [
+        {
+          name: "Churidar",
+          file: "set-churidar.png"
+        },
+        {
+          name: "Saree",
+          file: "set-saree.png"
+        }
+      ]
+
+    };
+
+
+    /*
+      =====================================================
+      ELEMENTS
+      =====================================================
+    */
+
+    const mainButtons =
+      document.querySelectorAll(".main-button");
+
+    const itemsContainer =
+      document.getElementById("itemsContainer");
+
+    const itemsTitle =
+      document.getElementById("itemsTitle");
+
+    const resetButton =
+      document.getElementById("resetButton");
+
+    const status =
+      document.getElementById("status");
+
+
+    /*
+      =====================================================
+      CATEGORY -> IMAGE LAYER
+      =====================================================
+    */
+
+    const imageLayers = {
+      inner: document.getElementById("innerImage"),
+      top: document.getElementById("topImage"),
+      bottoms: document.getElementById("bottomImage"),
+      set: document.getElementById("setImage")
+    };
+
+
+    /*
+      =====================================================
+      CURRENT SELECTION
+      =====================================================
+    */
+
+    const selected = {
+      inner: null,
+      top: null,
+      bottoms: null,
+      set: null
+    };
+
+
+    let currentCategory = null;
+
+
+    /*
+      =====================================================
+      OPEN CATEGORY
+      =====================================================
+    */
+
+    function openCategory(category) {
+
+      currentCategory = category;
+
+      // Highlight selected main button
+      mainButtons.forEach(button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.category === category
+        );
+
+      });
+
+      const categoryItems = clothing[category];
+
+      itemsContainer.innerHTML = "";
+
+      itemsTitle.textContent =
+        category.toUpperCase();
+
+
+      /*
+        Create sub-buttons dynamically
+      */
+
+      categoryItems.forEach((item, index) => {
+
+        const button =
+          document.createElement("button");
+
+        button.className = "item-button";
+
+        button.textContent = item.name;
+
+
+        // Keep selected item highlighted
+        if (selected[category] === index) {
+          button.classList.add("selected");
+        }
+
+
+        button.addEventListener("click", () => {
+
+          selectItem(category, index);
+
+        });
+
+
+        itemsContainer.appendChild(button);
+
+      });
+
+    }
+
+
+    /*
+      =====================================================
+      SELECT CLOTHING
+      =====================================================
+    */
+
+    function selectItem(category, index) {
+
+      const item = clothing[category][index];
+
+      selected[category] = index;
+
+
+      const image =
+        imageLayers[category];
+
+      image.src = item.file;
+
+      image.hidden = false;
+
+
+      /*
+        Update selected button appearance
+      */
+
+      const buttons =
+        itemsContainer.querySelectorAll(".item-button");
+
+      buttons.forEach((button, buttonIndex) => {
+
+        button.classList.toggle(
+          "selected",
+          buttonIndex === index
+        );
+
+      });
+
+
+      updateStatus();
+
+    }
+
+
+    /*
+      =====================================================
+      STATUS
+      =====================================================
+    */
+
+    function updateStatus() {
+
+      const names = [];
+
+      Object.keys(selected).forEach(category => {
+
+        const index = selected[category];
+
+        if (index !== null) {
+
+          names.push(
+            clothing[category][index].name
+          );
+
+        }
+
+      });
+
+
+      if (names.length === 0) {
+
+        status.textContent =
+          "No clothing selected";
+
+      } else {
+
+        status.textContent =
+          names.join(" • ");
+
+      }
+
+    }
+
+
+    /*
+      =====================================================
+      RESET
+      =====================================================
+    */
+
+    function resetGame() {
+
+      Object.keys(selected).forEach(category => {
+
+        selected[category] = null;
+
+        const image =
+          imageLayers[category];
+
+        image.removeAttribute("src");
+
+        image.hidden = true;
+
+      });
+
+
+      mainButtons.forEach(button => {
+        button.classList.remove("active");
+      });
+
+
+      itemsContainer.innerHTML = "";
+
+      itemsTitle.textContent =
+        "Select a category";
+
+      currentCategory = null;
+
+      updateStatus();
+
+    }
+
+
+    /*
+      =====================================================
+      MAIN BUTTON EVENTS
+      =====================================================
+    */
+
+    mainButtons.forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        const category =
+          button.dataset.category;
+
+        /*
+          Clicking the already-open category
+          closes its sub-buttons.
+        */
+
+        if (currentCategory === category) {
+
+          currentCategory = null;
+
+          mainButtons.forEach(btn => {
+            btn.classList.remove("active");
+          });
+
+          itemsContainer.innerHTML = "";
+
+          itemsTitle.textContent =
+            "Select a category";
+
+          return;
+        }
+
+
+        openCategory(category);
+
+      });
+
+    });
+
+
+    /*
+      =====================================================
+      RESET BUTTON
+      =====================================================
+    */
+
+    resetButton.addEventListener(
+      "click",
+      resetGame
+    );
+
+
+  </script>
+
 </body>
 </html>
+```
